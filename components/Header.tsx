@@ -19,7 +19,11 @@ function Header() {
         </Authenticated>
 
         <Unauthenticated>
-          <SignInButton>
+          <SignInButton
+            mode="modal"
+            forceRedirectUrl="/dashboard"
+            signUpForceRedirectUrl="/dashboard"
+          >
             <Button variant={"outline"}>Sign In</Button>
           </SignInButton>
         </Unauthenticated>
