@@ -10,11 +10,16 @@ function Header() {
   const pathName = usePathname();
   const isDashboard = pathName.startsWith("/dashboard");
   return (
-    <header>
+    <header className="flex items-center justify-between px-4 h-15 sm:px-6">
       <Link href={"/dashboard"}>Beam</Link>
 
-      <div>
+      <div className="flex items-center gap-2">
         <Authenticated>
+          {!isDashboard && (
+            <Link href="/dashboard">
+              <Button variant="outline">Dashboard</Button>
+            </Link>
+          )}
           <UserButton />
         </Authenticated>
 
