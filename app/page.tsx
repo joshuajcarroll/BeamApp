@@ -1,6 +1,15 @@
+import FeatureCard from "@/components/FeatureCard";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { SignedOut, SignInButton } from "@clerk/nextjs";
+import {
+  MessageCircle,
+  Shield,
+  Users,
+  Video,
+  Zap,
+  LucideIcon,
+} from "lucide-react";
 
 export default function Home() {
   return (
@@ -90,10 +99,106 @@ export default function Home() {
                 description="Lightning-fast messages with real time delivery.
                 Chat with friends and colleagues seamlessly."
               />
+              <FeatureCard
+                icon={Video}
+                title="HD Video Calls"
+                description="Crystal-clear video calls with one click. Perfect quality for personal chats and team meetings."
+              />
+              <FeatureCard
+                icon={Shield}
+                title="Privacy First"
+                description="End-to-end encryption keeps your conversations private. Your data belongs to you, always."
+              />
+              <FeatureCard
+                icon={Users}
+                title="Group Chats"
+                description="Create groups with friends, family, or colleagues. Manage conversations with advanced controls."
+              />
+              <FeatureCard
+                icon={Zap}
+                title="Lightning Fast"
+                description="Optimized for speed and performance. Works seamlessly across all your devices with instant sync."
+              />
+            </div>
+          </div>
+          {/*Enhanced CTA Section*/}
+          <div className="w-full max-w-4xl">
+            <div className="rounded-2xl border bg-gradient-to-br from-primary/5 to-primary/10 p-12 text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                Ready to transform your conversations?
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of users who&apos;ve already discovered a better
+                way to communicate. Start your journey with Beam today -
+                it&apos;s completely free.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button size="lg" className="text-lg px-8 py-6 h-auto">
+                      Get Started Free
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
+              </div>
+              <div className="flex flex-col justify-center  sm:flex-row items-center gap-6 mt-8 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  No credit card required
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  Free forever plan
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  Setup in 30 seconds
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </main>
+      <footer className="border-t bg-muted/30">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div>
+              <span className="text-xl font-bold tracking-tight">Beam</span>
+              <p className="text-sm text-muted-foreground mt-1">
+                The future of communication.
+              </p>
+            </div>
+            <div className="flex items-center gap-8">
+              <a
+                href="#"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="#"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Terms of Service
+              </a>
+              <a
+                href="#"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Support
+              </a>
+            </div>
+          </div>
+          <div className="border-t mt-8 pt-6 text-center">
+            <p className="text-xs text-muted-foreground">
+              2025 Beam. This is a Demo. We have no affiliation with any of the
+              brands mentioned in the video including Beam, any usage is purely
+              educational, in the event of any infringement, please contact us
+              and we will remove/altar the content immediately.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
