@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import UserSyncWrapper from "@/components/UserSyncWrapper";
 import streamClient from "@/lib/stream";
+import Link from "next/link";
 import { Chat } from "stream-chat-react";
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -30,14 +31,14 @@ function Layout({ children }: { children: React.ReactNode }) {
                 orientation="vertical"
                 className="mr-2 data-[orientation=vertical]:h-4"
               />
+              <Link href="/dashboard">
+                <h1 className="text-lg font-boldtracking-wider uppercase">
+                  Beam
+                </h1>
+              </Link>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-              <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div className="bg-muted/50 aspect-video rounded-xl" />
-                <div className="bg-muted/50 aspect-video rounded-xl" />
-                <div className="bg-muted/50 aspect-video rounded-xl" />
-              </div>
-              <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+              {children}
             </div>
           </SidebarInset>
         </SidebarProvider>
