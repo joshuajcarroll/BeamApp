@@ -1,6 +1,7 @@
 "use client";
 
 import { Doc } from "@/convex/_generated/dataModel";
+import { useCreateNewChat } from "@/hooks/useCreateNewChat";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { useChatContext } from "stream-chat-react";
