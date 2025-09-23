@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import UserSearch from "./UserSearch";
 
 export function NewChatDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -52,6 +53,10 @@ export function NewChatDialog({ children }: { children: React.ReactNode }) {
             Search for users to start a conversation with.
           </DialogDescription>
         </DialogHeader>
+        <div className="space-y-4">
+          {/*Search Component*/}
+          <UserSearch onSelectUser={handleSelectUser} />
+        </div>
       </DialogContent>
     </Dialog>
   );
