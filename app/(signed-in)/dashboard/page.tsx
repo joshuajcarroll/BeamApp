@@ -5,7 +5,12 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useUser } from "@clerk/nextjs";
 import { LogOutIcon, VideoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ChannelHeader, Thread } from "stream-chat-react";
+import {
+  ChannelHeader,
+  MessageInput,
+  MessageList,
+  Thread,
+} from "stream-chat-react";
 import { Channel, useChatContext, Window } from "stream-chat-react";
 
 function Dashboard() {
@@ -48,6 +53,10 @@ function Dashboard() {
                   Leave Chat
                 </Button>
               </div>
+            </div>
+            <MessageList />
+            <div className="sticky bottom-0 w-full">
+              <MessageInput />
             </div>
           </Window>
           <Thread />
