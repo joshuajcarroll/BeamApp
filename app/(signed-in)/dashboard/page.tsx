@@ -20,11 +20,31 @@ function Dashboard() {
   const { setOpen } = useSidebar();
 
   const handleCall = () => {
-    console.log("Calling...");
+    if (!channel) return;
+    router.push(`dashboard/video-call/${channel.id}`);
+    setOpen(false); //Close sidebar on mobile after navigating
   };
 
-  const handleLeaveChat = () => {
-    console.log("Leaving chat...");
+  const handleLeaveChat = async () => {
+    if (!channel || !user.isSignedIn) {
+      console.log("No active channel or user");
+      return;
+    }
+
+    //Confirm before leaving
+    const confirm = window.confirm("Are you sure you want to leave the chat?");
+    if (!confirm) return;
+
+    try {
+      //Remove current user from the channel using Stream's removeMembers method
+      await channel?.removeMembers([user.user.id]);
+
+      setActiveChannel(undefined);
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Error leaving the chat:", error);
+    }
   };
 
   return (
