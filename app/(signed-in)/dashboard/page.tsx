@@ -1,98 +1,120 @@
+// components/VideoCallPage.tsx (or your primary video call component)
+
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
-import { useUser } from "@clerk/nextjs";
-import { LogOutIcon, VideoIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import {
-  ChannelHeader,
-  MessageInput,
+  // Stream Video SDK components
+  Call,
+  CallContent,
+  CallControls,
+  SpeakerLayout,
+  StreamCall,
+  CallingState,
+  ParticipantsList,
+} from "@stream-io/video-react-sdk";
+import {
+  // Stream Chat SDK components
+  Channel,
   MessageList,
-  Thread,
+  MessageInput,
 } from "stream-chat-react";
-import { Channel, useChatContext, Window } from "stream-chat-react";
 
-function Dashboard() {
-  const user = useUser();
-  const router = useRouter();
-  const { channel, setActiveChannel } = useChatContext();
-  const { setOpen } = useSidebar();
+// Custom components and context for translation
+import { TranslatedMessage } from "@/components/TranslatedMessage";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useLanguage } from "@/context/LanguageContext";
 
-  const handleCall = () => {
-    if (!channel) return;
-    router.push(`dashboard/video-call/${channel.id}`);
-    setOpen(false); //Close sidebar on mobile after navigating
-  };
+// --- Component to render the Video Call and Chat UI with Translation ---
 
-  const handleLeaveChat = async () => {
-    if (!channel || !user.isSignedIn) {
-      console.log("No active channel or user");
-      return;
-    }
+interface VideoCallPageProps {
+  // The Stream Call object passed from the parent component
+  call: Call;
+  // The Stream Chat Channel object for this specific call
+  chatChannel: any;
+}
 
-    //Confirm before leaving
-    const confirm = window.confirm("Are you sure you want to leave the chat?");
-    if (!confirm) return;
+export const VideoCallPage = ({ call, chatChannel }: VideoCallPageProps) => {
+  // Get the current user's preferred language from the context
+  const { currentLanguage } = useLanguage();
+  const [showChat, setShowChat] = useState(true);
 
-    try {
-      //Remove current user from the channel using Stream's removeMembers method
-      await channel?.removeMembers([user.user.id]);
-
-      setActiveChannel(undefined);
-
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Error leaving the chat:", error);
-    }
-  };
+  // Display a loading state if the call hasn't fully joined
+  if (call.state.callingState !== CallingState.JOINED) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white text-xl">
+        Joining call...
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col w-full flex-1">
-      {channel ? (
-        <Channel>
-          <Window>
-            <div className="flex items-center justify-between">
-              {channel.data?.member_count === 1 ? (
-                <ChannelHeader title="Everyone else has left the chat!" />
-              ) : (
-                <ChannelHeader />
-              )}
-              <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={handleCall}>
-                  <VideoIcon className="w-4 h-4" />
-                  Video Call
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleLeaveChat}
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50 
-                dark:hover:bg-red-950"
-                >
-                  <LogOutIcon className="w-4 h-4" />
-                  Leave Chat
-                </Button>
-              </div>
+    <div className="flex h-screen w-full bg-gray-900">
+      {/* 1. Main Video Area */}
+      <div
+        className={`flex-1 ${showChat ? "lg:w-3/4" : "w-full"} p-2 transition-all duration-300`}
+      >
+        {/* StreamCall context for all video-related components */}
+        <StreamCall call={call}>
+          <div className="relative h-full rounded-xl overflow-hidden shadow-2xl">
+            {/* The primary video layout and stream content */}
+            <CallContent
+              CallControls={CallControls}
+              SpeakerLayout={SpeakerLayout}
+              className="h-full w-full"
+            />
+
+            {/* Floating Controls at the bottom */}
+            <div className="absolute bottom-4 w-full flex justify-center z-10">
+              <CallControls />
             </div>
-            <MessageList />
-            <div className="sticky bottom-0 w-full">
-              <MessageInput />
+
+            {/* Floating Language Selector for the user to choose their preferred display language */}
+            <div className="absolute top-4 left-4 z-10">
+              <LanguageSelector />
             </div>
-          </Window>
-          <Thread />
-        </Channel>
-      ) : (
-        <div className="flex flex-col items-center justify-center h-full">
-          <h2 className="text-2xl font-semibold text-muted-foreground mb-4">
-            No Active Channel
+
+            {/* Chat Toggle Button */}
+            <button
+              onClick={() => setShowChat((prev) => !prev)}
+              className="absolute top-4 right-4 z-10 p-2 bg-gray-700/70 text-white rounded-full hover:bg-gray-700 transition"
+              title={showChat ? "Hide Chat" : "Show Chat"}
+            >
+              {showChat ? "✖" : "💬"}
+            </button>
+          </div>
+        </StreamCall>
+      </div>
+
+      {/* 2. Side Chat Panel */}
+      {showChat && (
+        <div className="w-full lg:w-1/4 h-screen p-4 bg-gray-800 flex flex-col transition-all duration-300">
+          <h2 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">
+            Live Chat 💬
           </h2>
-          <p className="text-muted-foreground">
-            Select a chat from the sidebar or start a new conversation.
-          </p>
+          <div className="text-sm text-gray-400 mb-4">
+            Displaying translations in:{" "}
+            <span className="font-bold text-teal-400">{currentLanguage}</span>
+          </div>
+
+          {/* Stream Chat Channel context for the message list and input */}
+          <Channel channel={chatChannel}>
+            {/* MessageList uses the custom TranslatedMessage component.
+                  This component is responsible for checking the message.custom 
+                  field for a translation matching 'currentLanguage' and displaying it.
+                */}
+            <MessageList
+              Message={TranslatedMessage}
+              className="flex-1 overflow-y-auto"
+            />
+
+            {/* The MessageInput sends the message, which your backend webhook 
+                    then intercepts, translates using DeepL, and updates. 
+                */}
+            <MessageInput />
+          </Channel>
         </div>
       )}
     </div>
   );
-}
-
-export default Dashboard;
+};
