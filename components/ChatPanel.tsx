@@ -73,12 +73,26 @@ export function ChatPanel({ call }: { call: Call }) {
   }, [rows.length]);
 
   // listen for incoming messages
+  // listen for incoming messages
   useEffect(() => {
-    const off = call.on("custom", async (evt: unknown) => {
-      if (!isChatEvent(evt)) return;
-      const { id, text, senderId, senderName, at } = evt.data;
+    const off = call.on("custom", async (event) => {
+      // Stream Video puts your payload in event.custom
+      const payload = event.custom as {
+        type: string;
+        data?: {
+          id: string;
+          text: string;
+          senderId: string;
+          senderName?: string;
+          at: number;
+        };
+      };
 
-      // add row with original
+      if (!payload || payload.type !== "chat.msg" || !payload.data) return;
+
+      const { id, text, senderId, senderName, at } = payload.data;
+
+      // add row with original text
       setRows((prev) =>
         prev.some((r) => r.id === id)
           ? prev
@@ -102,8 +116,7 @@ export function ChatPanel({ call }: { call: Call }) {
         const json: { text?: string } = await res.json();
         const translated = json.text || text;
 
-        window.__chatTransCache =
-          window.__chatTransCache || new Map<string, string>();
+        window.__chatTransCache = window.__chatTransCache || new Map();
         window.__chatTransCache.set(key, translated);
 
         setRows((prev) =>
@@ -113,6 +126,7 @@ export function ChatPanel({ call }: { call: Call }) {
         // fallback: show original only
       }
     });
+
     return () => off();
   }, [call, lang]);
 
